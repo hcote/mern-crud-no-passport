@@ -7,7 +7,7 @@ client/.pnp
 client/.pnp.js
 
 # testing
-client//coverage
+client/coverage
 
 # production
 client/build
@@ -24,3 +24,7 @@ client/.env.production.local
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
+
+server/users.db
+server/.env
+notes.txt
