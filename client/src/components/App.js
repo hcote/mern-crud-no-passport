@@ -13,7 +13,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    m.user.getMetadata().then(issuer => setIssuer(issuer));
+    m.user.getMetadata().then(issuer => {
+      console.log(issuer);
+      setIssuer(issuer);
+    });
   }, [isAuthenticated]);
 
   return (
@@ -28,3 +31,14 @@ function App() {
 }
 
 export default App;
+
+/**
+ * Email is sent
+ * User is authenticated with Magic sdk and a did_token is returned as proof
+ * fetch POST sent to backend containing did_token
+ *    POST contains encoded DID & user object containing issuer, publicAddress, claim;
+ *    also included session.Session.cookie._expires & session.Session.passport.user = issuer (did:ethr:addr)
+ * setAuthenticated() is run, which runs useEffect()
+ * Issuer is then set via m.user.getMetadata()
+ * Home component is rendered, passing issuer props containing: issuer (did), email, publicAddress
+ */
