@@ -3,9 +3,14 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   email: { type: String, required: true },
-  didToken: { type: String, required: true },
-  lastLoginAt: { type: Number, required: true }
-  // apples: { type: Number, required: false, default: 0 }
+  didToken: { type: String, required: true, unique: true },
+  lastLoginAt: { type: Number, required: true },
+  todos: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Todo"
+    }
+  ]
 });
 
 const User = mongoose.model("User", UserSchema);

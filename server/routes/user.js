@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const User = require("../models/User");
+const Todo = require("../models/Todo");
 const { Magic } = require("@magic-sdk/admin");
 const MagicStrategy = require("passport-magic").Strategy;
 
-const magic = new Magic("sk_test_97731B469E96BF31");
+const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
 const strategy = new MagicStrategy(async (user, done) => {
   const userMetadata = await magic.users.getMetadataByIssuer(user.issuer);
@@ -53,27 +54,45 @@ passport.serializeUser((user, done) => {
 
 /* Populates user data in the req.user object */
 passport.deserializeUser(async (id, done) => {
-  console.log("here");
   try {
-    console.log("id");
-    console.log(id);
     const user = await User.findOne({ didToken: id });
-    console.log("user");
-    console.log(user);
     done(null, user);
   } catch (err) {
     done(err, null);
   }
 });
 
+async function fetchTodos(id) {
+  const user = await User.findOne({ didToken: id })
+    .populate("todos")
+    .exec((err, todos) => todos);
+  console.log(user);
+}
+
 router.post("/login", passport.authenticate("magic"), async (req, res) => {
   let didEncoded = req.headers.authorization.split(" ")[1];
   let issuer = await magic.token.getIssuer(didEncoded);
   let [proof, claim] = magic.token.decode(didEncoded);
-  req.session.user = claim;
-  console.log(req.session);
+  // let todos = fetchTodos(claim.iss);
+
   res.json({
-    did: claim.iss
+    claim
+  });
+});
+
+router.post("/todo", async (req, res) => {
+  console.log(req.isAuthenticated());
+  console.log(req.body);
+  if (!req.isAuthenticated()) return;
+  let todoObj = new Todo({ todo: req.body.todo });
+  todoObj.save().then(savedTodo => {
+    User.findOne({ didToken: req.session.passport.user }, (err, user) => {
+      console.log(user);
+      user.todos.push(savedTodo);
+      user.save().then(saved => {
+        res.json({ msg: `Saved: ${savedTodo}` });
+      });
+    });
   });
 });
 
