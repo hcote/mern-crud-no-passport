@@ -1,9 +1,10 @@
 import React from "react";
+import "../styles/app.css";
 
-function Nav({ issuer, m, onLogout }) {
-  fetch("http://localhost:8080/user")
-    .then(res => res.json())
-    .then(data => console.log(data));
+function Nav({ issuer, m, onLogout, didEncoded }) {
+  // fetch("http://localhost:8080/api/user")
+  //   .then(res => res.json())
+  //   .then(data => console.log(data));
 
   return (
     <div className="App">
@@ -27,9 +28,11 @@ function Nav({ issuer, m, onLogout }) {
           fetch("http://localhost:8080/api/user", {
             method: "GET",
             headers: new Headers({
-              Authorization: "Bearer " + issuer.issuer
+              Authorization: "Bearer " + didEncoded,
+              "Content-Type": "application/json"
             }),
-            withCredentials: true
+            withCredentials: true,
+            credentials: "include"
           })
             .then(res => res.json())
             .then(data => console.log(data));

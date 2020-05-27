@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../styles/app.css";
 
 function Signup({ m, onLogin }) {
   const [email, setEmail] = useState("huntercote2@gmail.com");
@@ -11,11 +12,13 @@ function Signup({ m, onLogin }) {
           Authorization: "Bearer " + did
         }),
         withCredentials: true,
-        body: JSON.stringify({ email: email })
+        credentials: "include"
       })
         .then(res => res.json())
-        .then(data => console.log(data));
-      onLogin(did);
+        .then(data => {
+          onLogin(data.did);
+          m.user.getIdToken().then(res => console.log(res));
+        });
     });
   };
 
