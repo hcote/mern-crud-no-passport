@@ -5,7 +5,7 @@ import "../styles/app.css";
 
 function Home({ issuer, m, onLogout, didEncoded, todos, removeDeletedTodoFromView, addNewTodo }) {
   return (
-    <div className="App">
+    <div>
       <Nav issuer={issuer} m={m} didEncoded={didEncoded} onLogout={onLogout} />
       <Body
         todos={todos}

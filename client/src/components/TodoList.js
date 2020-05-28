@@ -4,7 +4,7 @@ import "../styles/app.css";
 
 function TodoList({ todos, removeDeletedTodoFromView }) {
   return (
-    <div className="App">
+    <div>
       {todos
         ? todos.map(todo => {
             return (

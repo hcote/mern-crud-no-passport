@@ -3,18 +3,19 @@ import "../styles/app.css";
 
 function Nav({ issuer, m, onLogout, didEncoded }) {
   return (
-    <div className="App">
-      <div>{issuer ? `Welcome, ${issuer.email}` : null}</div>
+    <div className="loggedin-nav">
+      <div className="loggedin-nav-user">{issuer ? `Welcome, ${issuer.email}` : null}</div>
       <input
         type="submit"
         value="Logout"
+        className="logout-btn"
         onClick={async e => {
           e.preventDefault();
           await m.user.logout();
           onLogout(true);
         }}
       />
-      <input
+      {/* <input
         type="submit"
         value="Get User"
         onClick={e => {
@@ -31,7 +32,7 @@ function Nav({ issuer, m, onLogout, didEncoded }) {
             .then(res => res.json())
             .then(data => console.log(data));
         }}
-      />
+      /> */}
     </div>
   );
 }

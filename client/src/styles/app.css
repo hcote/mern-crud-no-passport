@@ -1,0 +1,111 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Logged Out Page */
+
+.signup-form-nav {
+  height: 50px;
+  background-color: #6851ff;
+  margin-bottom: 100px;
+}
+
+.signup-form {
+  width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding-bottom: 50px;
+}
+
+.signup-form-input,
+.signup-form-submit-btn {
+  box-sizing: border-box;
+  width: 50%;
+  margin-bottom: 15px;
+}
+
+.signup-form-submit-btn {
+  cursor: pointer;
+}
+
+/* Logged In Nav */
+
+.loggedin-nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 50px;
+  background-color: #6851ff;
+  margin-bottom: 50px;
+}
+
+.loggedin-nav-user {
+  margin-left: 35px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  margin-right: 35px;
+  margin-top: 7px;
+  height: 70%;
+  background-color: #6851ff;
+  border: 2px solid #a1a1a1;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Logged In Body */
+
+.body-container {
+  margin: auto;
+  text-align: center;
+  width: 400px;
+}
+
+/* Add Todo Form */
+
+.add-todo-form {
+  display: flex;
+  justify-content: center;
+  height: 30px;
+  margin-bottom: 40px;
+}
+
+.add-todo-input {
+  width: 200px;
+}
+
+.add-todo-error-msg {
+  font-size: 10px;
+  color: red;
+}
+
+.add-todo-submit-btn {
+  margin-left: 10px;
+}
+
+/* Todo List */
+
+.todo-item-container {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid gray;
+  padding-bottom: 10px;
+  margin-top: 20px;
+}
+
+.todo-item-name {
+  margin-left: 20px;
+  line-height: 30px;
+}
+
+.todo-item-delete-btn {
+  color: red;
+  height: 30px;
+  cursor: pointer;
+}

@@ -27,17 +27,19 @@ function App() {
   }, [didEncoded]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/todos", {
-      method: "GET",
-      headers: new Headers({
-        Authorization: "Bearer " + didEncoded,
-        "Content-Type": "application/json"
-      }),
-      withCredentials: true,
-      credentials: "include"
-    })
-      .then(res => res.json())
-      .then(data => setTodos(data.todos));
+    if (issuer) {
+      fetch("http://localhost:8080/api/todos", {
+        method: "GET",
+        headers: new Headers({
+          Authorization: "Bearer " + didEncoded,
+          "Content-Type": "application/json"
+        }),
+        withCredentials: true,
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => setTodos(data.todos));
+    }
   }, [issuer]);
 
   return (

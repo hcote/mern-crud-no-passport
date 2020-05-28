@@ -24,22 +24,28 @@ function Signup({ m, onLogin, setTodos }) {
 
   return (
     <div>
-      <h4>Login / Signup</h4>
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          login();
-        }}
-      >
-        <input
-          value={email}
-          type="email"
-          placeholder="Email..."
-          onChange={e => {
-            setEmail(e.target.value);
+      <nav className="signup-form-nav"></nav>
+      <div className="signup-form">
+        <h4 className="signup-form-header">Log in / Sign up</h4>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            login();
           }}
-        />
-      </form>
+        >
+          <input
+            value={email}
+            type="email"
+            placeholder="Email..."
+            className="signup-form-input"
+            onChange={e => {
+              setEmail(e.target.value);
+            }}
+          />
+          <br />
+          <input type="submit" value="Enter" className="signup-form-submit-btn" />
+        </form>
+      </div>
     </div>
   );
 }

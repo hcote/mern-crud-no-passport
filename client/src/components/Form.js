@@ -7,21 +7,24 @@ function Form({ addNewTodo }) {
   let [errorMsg, setErrorMsg] = useState("");
 
   return (
-    <div className="App">
-      <form>
+    <div className="add-todo-form-container">
+      <form className="add-todo-form">
         <input
           type="text"
           placeholder="Todo..."
           name="todo"
+          autoComplete="off"
+          className="add-todo-input"
           value={todo}
           onChange={e => {
             setTodo(e.target.value);
           }}
         />
-        <div>{errorMsg}</div>
+
         <input
           type="submit"
-          value="Submit"
+          value="Add"
+          className="add-todo-submit-btn"
           onClick={e => {
             e.preventDefault();
             if (!todo.length) {
@@ -44,6 +47,7 @@ function Form({ addNewTodo }) {
           }}
         />
       </form>
+      <div className="add-todo-error-msg">{errorMsg}</div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ const cors = require("cors");
 const app = express();
 const db = require("./models/Connection");
 
-app.use(cors({ credentials: true, origin: "http://localhost:3001" }));
+app.use(cors({ credentials: true, origin: "http://localhost:3002" }));
 app.set("trust proxy", 1);
 
 app.use(logger("dev"));

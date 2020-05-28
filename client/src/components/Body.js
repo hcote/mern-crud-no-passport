@@ -5,7 +5,7 @@ import "../styles/app.css";
 
 function Body({ todos, removeDeletedTodoFromView, addNewTodo }) {
   return (
-    <div className="App">
+    <div className="body-container">
       <Form addNewTodo={addNewTodo} />
       <TodoList todos={todos} removeDeletedTodoFromView={removeDeletedTodoFromView} />
     </div>

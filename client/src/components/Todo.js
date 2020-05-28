@@ -12,25 +12,17 @@ function Todo({ todo, removeDeletedTodoFromView }) {
       credentials: "include"
     })
       .then(res => res.json())
-      .then(data => console.log("deleted"));
+      .then(data => console.log("Task deleted."));
   };
 
-  const handleEdit = id => {};
-
   return (
-    <div className="App">
-      <div>{todo.todo}</div>
+    <div className="todo-item-container">
+      <div className="todo-item-name">{todo.todo}</div>
       <form>
         <input
           type="button"
-          value="edit"
-          onClick={() => {
-            handleEdit();
-          }}
-        />
-        <input
-          type="button"
-          value=" delete"
+          value="Delete"
+          className="todo-item-delete-btn"
           onClick={() => {
             deleteFromDatabase(todo._id);
             removeDeletedTodoFromView(todo._id);
