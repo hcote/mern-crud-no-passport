@@ -5,6 +5,7 @@ const User = require("../models/User");
 const Todo = require("../models/Todo");
 const { Magic } = require("@magic-sdk/admin");
 const MagicStrategy = require("passport-magic").Strategy;
+const bodyParser = require("body-parser");
 
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
@@ -20,6 +21,8 @@ const strategy = new MagicStrategy(async (user, done) => {
   }
 });
 
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
 passport.use(strategy);
 
 const signup = async (user, userMetadata, done) => {
@@ -62,37 +65,62 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-async function fetchTodos(id) {
-  const user = await User.findOne({ didToken: id })
+function fetchTodos(id) {
+  let user = User.findOne({ didToken: id })
     .populate("todos")
     .exec((err, todos) => todos);
-  console.log(user);
+
+  return user;
 }
 
 router.post("/login", passport.authenticate("magic"), async (req, res) => {
   let didEncoded = req.headers.authorization.split(" ")[1];
   let issuer = await magic.token.getIssuer(didEncoded);
   let [proof, claim] = magic.token.decode(didEncoded);
-  // let todos = fetchTodos(claim.iss);
-
-  res.json({
-    claim
-  });
+  User.findOne({ didToken: claim.iss })
+    .populate("todos")
+    .exec((err, todos) => {
+      console.log(todos);
+      res.json({
+        claim,
+        todos
+      });
+    });
 });
 
 router.post("/todo", async (req, res) => {
-  console.log(req.isAuthenticated());
-  console.log(req.body);
   if (!req.isAuthenticated()) return;
+  if (!req.body.todo.length) return;
   let todoObj = new Todo({ todo: req.body.todo });
   todoObj.save().then(savedTodo => {
     User.findOne({ didToken: req.session.passport.user }, (err, user) => {
       console.log(user);
       user.todos.push(savedTodo);
       user.save().then(saved => {
-        res.json({ msg: `Saved: ${savedTodo}` });
+        console.log(savedTodo);
+        res.json({ todo: savedTodo });
       });
     });
+  });
+});
+
+router.get("/todos", (req, res) => {
+  if (req.session.passport) {
+    User.findOne({ didToken: req.session.passport.user })
+      .populate("todos")
+      .exec((err, todos) => {
+        res.json(todos);
+      });
+  }
+  return;
+});
+
+router.get("/delete-todo/:id", (req, res) => {
+  if (!req.isAuthenticated()) return;
+  Todo.deleteOne({ _id: req.params.id }, (err, deleted) => {
+    if (err) console.log(err);
+    console.log(deleted);
+    res.json({ deleted });
   });
 });
 

@@ -11,6 +11,14 @@ function App() {
   const [issuer, setIssuer] = useState("");
   const [didEncoded, setDidEncoded] = useState("");
   // const [isLoading, setIsLoading] = useState(false);
+  const [todos, setTodos] = useState([]);
+  const [refreshList, setRefreshList] = useState(false);
+
+  useEffect(() => {
+    // post to db
+    // if session.passport.user!
+    // render login screen
+  }, []);
 
   useEffect(() => {
     m.user.getMetadata().then(issuer => {
@@ -18,12 +26,39 @@ function App() {
     });
   }, [didEncoded]);
 
+  useEffect(() => {
+    fetch("http://localhost:8080/api/todos", {
+      method: "GET",
+      headers: new Headers({
+        Authorization: "Bearer " + didEncoded,
+        "Content-Type": "application/json"
+      }),
+      withCredentials: true,
+      credentials: "include"
+    })
+      .then(res => res.json())
+      .then(data => setTodos(data.todos));
+  }, [issuer]);
+
   return (
     <div className="App">
       {!issuer ? (
-        <Signup m={m} onLogin={did => setDidEncoded(did)} />
+        <Signup m={m} onLogin={did => setDidEncoded(did)} setTodos={todos => setTodos(todos)} />
       ) : (
-        <Home issuer={issuer} m={m} didEncoded={didEncoded} onLogout={() => setIssuer("")} />
+        <Home
+          issuer={issuer}
+          m={m}
+          todos={todos}
+          removeDeletedTodoFromView={id => {
+            let newTodos = todos.filter(todo => id !== todo._id);
+            setTodos(newTodos);
+          }}
+          addNewTodo={newTodo => {
+            setTodos([...todos, newTodo]);
+          }}
+          didEncoded={didEncoded}
+          onLogout={() => setIssuer("")}
+        />
       )}
     </div>
   );

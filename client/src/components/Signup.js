@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/app.css";
 
-function Signup({ m, onLogin }) {
+function Signup({ m, onLogin, setTodos }) {
   const [email, setEmail] = useState("huntercote2@gmail.com");
 
   const login = () => {
@@ -16,8 +16,8 @@ function Signup({ m, onLogin }) {
       })
         .then(res => res.json())
         .then(data => {
-          onLogin(data.did);
-          m.user.getIdToken().then(res => console.log(res));
+          onLogin(data.claim);
+          setTodos(data.todos.todos);
         });
     });
   };

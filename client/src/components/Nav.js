@@ -2,22 +2,16 @@ import React from "react";
 import "../styles/app.css";
 
 function Nav({ issuer, m, onLogout, didEncoded }) {
-  // fetch("http://localhost:8080/api/user")
-  //   .then(res => res.json())
-  //   .then(data => console.log(data));
-
   return (
     <div className="App">
       <div>{issuer ? `Welcome, ${issuer.email}` : null}</div>
       <input
         type="submit"
         value="Logout"
-        onClick={e => {
+        onClick={async e => {
           e.preventDefault();
-          m.user.logout();
-          m.user.isLoggedIn().then(bool => {
-            !bool && onLogout(bool);
-          });
+          await m.user.logout();
+          onLogout(true);
         }}
       />
       <input
