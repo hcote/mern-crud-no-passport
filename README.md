@@ -86,7 +86,8 @@ This is set up using Mongo DB Atlas, which is a free cloud-based mongo database.
 
 <p>Enter this in client/src/settings/config.js</p>
 <pre>
-<code>const settings = {
+<code>
+const settings = {
   MAGIC_PUBLISHABLE_KEY: "your_publishable_key",
   serverUrl: "your_server_url_here" // http://localhost:8080
 };
