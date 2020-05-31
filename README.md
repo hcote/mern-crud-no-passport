@@ -106,5 +106,7 @@ CLIENT_URL=your_client_url_here (i.e. http://localhost:3000)</code></pre>
 ## Errors
 
 If you experience errors installing dependencies, change your Node and Npm versions to the ones below:
+
 Node: 10.15.10
+
 Npm: 6.4.1
