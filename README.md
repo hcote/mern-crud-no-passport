@@ -2,28 +2,28 @@
 
 See it live at <a href="#">github.io</a>
 
-
 ## Technologies
 
 - Mongo
 - Express
 - Node
 - React (hooks)
-- Magic (authentication SDK)
+- <a href="https://docs.magic.link" target="_blank">Magic</a> (passwordless authentication SDK)
 - Passportjs
 
 The <code>master</code> branch uses <code>contextAPI</code> for state management. If you want a version that doesn't use that hook, clone down the non-contextAPI branch.
 
-
 ## Overview
 
-Anyone can clone this down and have an outofthebox passwordless application ready to go with CRUD capabilities.
+Anyone can clone this down and have an outofthebox passwordless application ready to go with CRUD capabilities. We leverage Magic's sdk because it provides the highest level of security, and easiest way to add authentication into your app.
+
+- <a href="https://docs.magic.link/security">Magic Security</a>
 
 #### Flow
 
 1. User submits the login form
 2. Magic sends an email to the user
-3. When the email link is clicked, <code>m.auth.loginWithMagicLink({ email })</code> resolves to a unique Decentralized ID token, which is sent in a POST request to the server (read more about <a href="">DID tokens</a>)
+3. When the email link is clicked, <code>m.auth.loginWithMagicLink({ email })</code> resolves to a unique Decentralized ID token, which is sent in a POST request to the server (read more about <a href="https://docs.magic.link/tutorials/decentralized-id">DID tokens</a>)
 4. We validate the authenticity of the did token (sent in the <code>Authorization: Bearer < token ></code>) Magic's server-side SDK
 5. If valid, we create a new user in Mongo if it's the first time authenticating, or logs a user in if they already have an account
 6. Passport issues a cookie that lives in <code>request.session</code> to authorize all additional requests to the server
@@ -85,21 +85,23 @@ This is set up using Mongo DB Atlas, which is a free cloud-based mongo database.
 #### Client
 
 <p>Enter this in client/src/settings/config.js</p>
+<pre>
 <code>const settings = {
   MAGIC_PUBLISHABLE_KEY: "your_publishable_key",
   serverUrl: "server_url" // http://localhost:8080
-};</code>
+};</code></pre>
 
 module.exports = settings;
 
 #### Server
 
 <p>Enter this in your server/.env file</p>
+<pre>
 <code>
 MAGIC_PUBLISHABLE_KEY=your_publishable_key
 MAGIC_SECRET_KEY=your_secret_key
 mongoURI=your_mongo_URL
-CLIENT_URL=client_url (i.e. http://localhost:3000)</code>
+CLIENT_URL=client_url (i.e. http://localhost:3000)</code></pre>
 
 ## Errors
 
