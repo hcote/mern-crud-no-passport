@@ -89,9 +89,10 @@ This is set up using Mongo DB Atlas, which is a free cloud-based mongo database.
 <code>const settings = {
   MAGIC_PUBLISHABLE_KEY: "your_publishable_key",
   serverUrl: "your_server_url_here" // http://localhost:8080
-};</code></pre>
+};
 
 module.exports = settings;
+</code></pre>
 
 #### Server
 
