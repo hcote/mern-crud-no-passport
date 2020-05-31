@@ -1,19 +1,21 @@
-### Magic Todo List
+## Magic Todo List
 
 See it live at <a href="#">github.io</a>
 
-### Technologies
 
-Mongo
-Express
-Node
-React (hooks)
-Magic (authentication SDK)
-Passportjs
+## Technologies
+
+- Mongo
+- Express
+- Node
+- React (hooks)
+- Magic (authentication SDK)
+- Passportjs
 
 The <code>master</code> branch uses contextAPI for state management. If you want a version that doesn't use that hook, clone down the non-contextAPI branch.
 
-### Overview
+
+## Overview
 
 Anyone can clone this down and have an outofthebox passwordless application ready to go with CRUD capabilities.
 
@@ -26,7 +28,7 @@ Anyone can clone this down and have an outofthebox passwordless application read
 5. If valid, we create a new user in Mongo if it's the first time authenticating, or logs a user in if they already have an account
 6. Passport issues a cookie that lives in <code>request.session</code> to authorize all additional requests to the server
 
-##### Managing Sessions
+#### Managing Sessions
 
 Magic's SDK is used for authentication, then passportjs handles the authorization and session management. When setting the cookie:
 
@@ -49,34 +51,32 @@ Change the maxAge to how long you want the user session to last. Each time they 
 
 When testing on localhost, the connection is over http so we keep secure: false. Read more about session management with Express Session <a href="">here</a>.
 
-### Getting Project Started Locally
+## Getting Project Started Locally
 
 <code>\$ git clone < repo_name > </code>
 
-Terminal Tab 1 (set up client)
+###### Terminal Tab 1 (set up client)
 <code>$ cd client</code><br />
 <code>$ npm i</code><br />
 <code>$ cd src</code><br />
 <code>$ mkdir settings</code><br />
 <code>\$ cd settings && touch config</code><br />
-
-<div>See Environment Variables > Client section below</div><br />
+<p>See Environment Variables > Client section below</p><br />
 <code>$ cd ../../</code><br />
 <code>$ npm run start</code><br />
 
-Terminal Tab 2 (set up server)
+###### Terminal Tab 2 (set up server)
 <code>$ cd server</code><br />
 <code>$ npm i</code><br />
 <code>\$ touch .env</code><br />
-
-<div>See Environment Variables > Server section below</div><br />
+<p>See Environment Variables > Server section below</p><br />
 <code>$ nodemon</code> This will start the server on port 8080
 
 #### Mongo Database
 
 This is set up using Mongo DB Atlas, which is a free cloud-based mongo database. I will not go into setting this up but you can follow one of the many tutorials on YouTube.
 
-### Environment Variables
+## Environment Variables
 
 #### Client
 
@@ -97,7 +97,7 @@ MAGIC_SECRET_KEY=your_secret_key
 mongoURI=your_mongo_URL
 CLIENT_URL=client_url (i.e. http://localhost:3000)</code>
 
-### Errors
+## Errors
 
 If you experience errors installing dependencies, change your Node and Npm versions to the ones below:
 Node: 10.15.10
