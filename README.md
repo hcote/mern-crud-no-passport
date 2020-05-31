@@ -12,7 +12,7 @@ See it live at <a href="#">github.io</a>
 - Magic (authentication SDK)
 - Passportjs
 
-The <code>master</code> branch uses contextAPI for state management. If you want a version that doesn't use that hook, clone down the non-contextAPI branch.
+The <code>master</code> branch uses <code>contextAPI</code> for state management. If you want a version that doesn't use that hook, clone down the non-contextAPI branch.
 
 
 ## Overview
@@ -32,6 +32,7 @@ Anyone can clone this down and have an outofthebox passwordless application read
 
 Magic's SDK is used for authentication, then passportjs handles the authorization and session management. When setting the cookie:
 
+<pre>
 <code>
 app.use(
   session({
@@ -46,10 +47,11 @@ app.use(
   })
 );
 </code>
+</pre>
 
-Change the maxAge to how long you want the user session to last. Each time they make an authorized request to the server, the cookie age will reset and
+Change the <code>maxAge</code> to how long you want the user session to last. Each time they make an authorized request to the server, the cookie age will reset and
 
-When testing on localhost, the connection is over http so we keep secure: false. Read more about session management with Express Session <a href="">here</a>.
+When testing on localhost, the connection is over http so we keep secure: false. Read more about session management with Express Session <a href="https://github.com/expressjs/session">here</a>.
 
 ## Getting Project Started Locally
 
@@ -60,17 +62,19 @@ When testing on localhost, the connection is over http so we keep secure: false.
 <code>$ npm i</code><br />
 <code>$ cd src</code><br />
 <code>$ mkdir settings</code><br />
-<code>\$ cd settings && touch config</code><br />
-<p>See Environment Variables > Client section below</p><br />
+<code>$ cd settings && touch config</code><br />
+<span>See Environment Variables > <b>Client</b> section below</span><br />
 <code>$ cd ../../</code><br />
 <code>$ npm run start</code><br />
+<p>The client will start on port 3000</p>
 
 ###### Terminal Tab 2 (set up server)
 <code>$ cd server</code><br />
 <code>$ npm i</code><br />
-<code>\$ touch .env</code><br />
-<p>See Environment Variables > Server section below</p><br />
-<code>$ nodemon</code> This will start the server on port 8080
+<code>$ touch .env</code><br />
+<span>See Environment Variables > <b>Server</b> section below</span><br />
+<code>$ nodemon</code> 
+<p>The server will start on port 8080</p>
 
 #### Mongo Database
 
