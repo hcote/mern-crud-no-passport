@@ -7,9 +7,7 @@ function Logout({ onLogout }) {
       method: "GET",
       withCredentials: true,
       credentials: "include"
-    })
-      .then(res => res.json())
-      .then(data => onLogout(true));
+    }).then(() => onLogout());
   };
 
   return (

@@ -10,11 +10,7 @@ function Todo({ todo, removeDeletedTodoFromView, onLogout }) {
       },
       withCredentials: true,
       credentials: "include"
-    })
-      .then(res => (res.status === 200 ? res.json() : "Unauthorized"))
-      .then(data => {
-        if (data === "Unauthorized") onLogout(true);
-      });
+    }).then(res => (res.status === 401 ? onLogout() : null));
   };
 
   return (

@@ -37,19 +37,18 @@ function Form({ m, addNewTodo, onLogout }) {
           type="submit"
           value="Add"
           className="add-todo-submit-btn"
-          onClick={e => {
+          onClick={async e => {
             e.preventDefault();
             if (!todo.length) {
               setErrorMsg("Field must not be empty.");
             } else {
-              postTodoToServer(`${serverUrl}/todos/add-todo`).then(data => {
-                if (data === "Unauthorized") {
-                  onLogout();
-                } else {
-                  addNewTodo(data.todo);
-                  setTodo("");
-                }
-              });
+              let data = await postTodoToServer(`${serverUrl}/todos/add-todo`);
+              if (data === "Unauthorized") {
+                onLogout();
+              } else {
+                addNewTodo(data.todo);
+                setTodo("");
+              }
             }
           }}
         />

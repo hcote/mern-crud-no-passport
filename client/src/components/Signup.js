@@ -15,13 +15,11 @@ function Signup({ m, onLogin, setTodos }) {
     }).then(res => res.json());
   };
 
-  const login = () => {
-    m.auth.loginWithMagicLink({ email }).then(did => {
-      loginRequestToServer(`http://localhost:8080/api/user/login`, did).then(data => {
-        onLogin(email);
-        setTodos(data.todos.todos);
-      });
-    });
+  const login = async () => {
+    let did = await m.auth.loginWithMagicLink({ email });
+    let data = await loginRequestToServer(`http://localhost:8080/api/user/login`, did);
+    onLogin(email);
+    setTodos(data.todos.todos);
   };
 
   return (
