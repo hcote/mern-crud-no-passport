@@ -88,7 +88,7 @@ This is set up using Mongo DB Atlas, which is a free cloud-based mongo database.
 <pre>
 <code>const settings = {
   MAGIC_PUBLISHABLE_KEY: "your_publishable_key",
-  serverUrl: "server_url" // http://localhost:8080
+  serverUrl: "your_server_url_here" // http://localhost:8080
 };</code></pre>
 
 module.exports = settings;
@@ -101,7 +101,7 @@ module.exports = settings;
 MAGIC_PUBLISHABLE_KEY=your_publishable_key
 MAGIC_SECRET_KEY=your_secret_key
 mongoURI=your_mongo_URL
-CLIENT_URL=client_url (i.e. http://localhost:3000)</code></pre>
+CLIENT_URL=your_client_url_here (i.e. http://localhost:3000)</code></pre>
 
 ## Errors
 
