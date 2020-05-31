@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   email: { type: String, required: true },
-  didToken: { type: String, required: true, unique: true },
+  issuer: { type: String, required: true, unique: true },
   lastLoginAt: { type: Number, required: true },
   todos: [
     {

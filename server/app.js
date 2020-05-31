@@ -10,7 +10,7 @@ const cors = require("cors");
 const app = express();
 const db = require("./models/Connection");
 
-app.use(cors({ credentials: true, origin: "http://localhost:3002" }));
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.set("trust proxy", 1);
 
 app.use(logger("dev"));
@@ -23,7 +23,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 1000, // 1 hour
       secure: false, // set true for HTTPS only.
       sameSite: false
     }

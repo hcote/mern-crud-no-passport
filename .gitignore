@@ -25,6 +25,7 @@ client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
 
+client/src/config
 server/users.db
 server/.env
 notes.txt

@@ -15,15 +15,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState([]);
 
-  const fetchDataFromDb = url => {
-    return fetch(url, {
+  const fetchDataFromDb = async url => {
+    let res = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
       },
       withCredentials: true,
       credentials: "include"
-    }).then(res => (res.status === 200 ? res.json() : "Unauthorized"));
+    });
+    return res.status === 200 ? res.json() : "Unauthorized";
   };
 
   const removeDeletedTodoFromView = id => {
@@ -32,36 +33,43 @@ function App() {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchDataFromDb(`${serverUrl}/user`).then(data => {
+    async function runOnPageRefresh() {
+      setIsLoading(true);
+      let data = await fetchDataFromDb(`${serverUrl}/user`);
       if (data === "Unauthorized") {
         setEmail("");
         m.user.logout();
       } else {
         setEmail(data.email);
       }
-    });
-    setIsLoading(false);
+      setIsLoading(false);
+    }
+    runOnPageRefresh();
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-    if (!email) return;
-    fetchDataFromDb(`${serverUrl}/todos/all-todos`).then(data => {
-      if (data === "Unauthorized") {
+    async function runWhenUserLogsIn() {
+      setIsLoading(true);
+      let data = email ? await fetchDataFromDb(`${serverUrl}/todos/all-todos`) : null;
+      if (!data) {
+        return setIsLoading(false);
+      } else if (data === "Unauthorized") {
         m.user.logout();
         setEmail("");
       } else {
         setTodos(data.todos);
       }
-    });
-    setIsLoading(false);
+      setIsLoading(false);
+    }
+    runWhenUserLogsIn();
   }, [email]);
 
   return (
     <div className="App">
       <Nav email={email} onLogout={() => setEmail("")} />
-      {!email ? (
+      {isLoading ? (
+        <img className="loading-gif" src={loading} alt="loading..." height="30px" />
+      ) : !email ? (
         <Signup m={m} onLogin={email => setEmail(email)} setTodos={todos => setTodos(todos)} />
       ) : (
         <Home
@@ -73,10 +81,10 @@ function App() {
           onLogout={() => {
             setEmail("");
             m.user.logout();
+            setIsLoading(false);
           }}
         />
       )}
-      {/* <img src={loading} alt="loading..." height="25px" /> */}
     </div>
   );
 }

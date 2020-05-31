@@ -2,6 +2,7 @@ html,
 body {
   height: 100%;
   margin: 0;
+  text-align: center;
 }
 
 /* Logged Out Page */
@@ -134,6 +135,8 @@ body {
   width: 100%;
   border: 0;
   border-bottom: 1px solid rgb(196, 196, 196);
+  margin-left: 5px;
+  height: 35px;
 }
 
 .add-todo-input:focus {
@@ -148,17 +151,20 @@ body {
 }
 
 .add-todo-submit-btn {
-  margin-left: 15px;
+  margin: 4px 5px 0 15px;
+  height: 35px;
   background-color: #242a32;
   color: white;
-  border: 0;
+  border: 1px solid white;
   border-radius: 4px;
   padding: 5px 10px;
   cursor: pointer;
 }
 
 .add-todo-submit-btn:hover {
-  box-shadow: 0px 0px 8px -2px rgb(124, 124, 124);
+  color: #242a32;
+  background-color: white;
+  border: 1px solid #242a32;
 }
 
 /* Todo List */
@@ -170,13 +176,14 @@ body {
 .todo-item-container {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
-  margin-top: 20px;
-  border-bottom: 1px solid white;
+  padding: 10px;
+  margin-top: 10px;
+  /* border-bottom: 1px solid white; */
 }
 
 .todo-item-container:hover {
-  border-bottom: 1px solid rgb(221, 221, 221);
+  /* border-bottom: 1px solid rgb(221, 221, 221); */
+  background-color: rgb(241, 241, 241);
 }
 
 .todo-item-name {
@@ -197,3 +204,9 @@ body {
   color: white;
   background-color: red;
 }
+
+/* Loading GIF */
+
+/* .loading-gif {
+  margin
+} */

@@ -44,7 +44,7 @@ function Form({ m, addNewTodo, onLogout }) {
             } else {
               postTodoToServer(`${serverUrl}/todos/add-todo`).then(data => {
                 if (data === "Unauthorized") {
-                  onLogout(true);
+                  onLogout();
                 } else {
                   addNewTodo(data.todo);
                   setTodo("");

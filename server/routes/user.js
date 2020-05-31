@@ -8,9 +8,9 @@ const MagicStrategy = require("passport-magic").Strategy;
 
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
-const strategy = new MagicStrategy(async (user, done) => {
+const strategy = new MagicStrategy(async function(user, done) {
   const userMetadata = await magic.users.getMetadataByIssuer(user.issuer);
-  const existingUser = await User.findOne({ didToken: user.issuer });
+  const existingUser = await User.findOne({ issuer: user.issuer });
   if (!existingUser) {
     /* Create new user if doesn't exist */
     return signup(user, userMetadata, done);
@@ -20,6 +20,8 @@ const strategy = new MagicStrategy(async (user, done) => {
   }
 });
 
+passport.use(strategy);
+
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 passport.use(strategy);
@@ -27,7 +29,7 @@ passport.use(strategy);
 const signup = async (user, userMetadata, done) => {
   let newUser = {
     email: userMetadata.email,
-    didToken: user.issuer,
+    issuer: user.issuer,
     lastLoginAt: user.claim.iat
   };
   await new User(newUser).save();
@@ -35,11 +37,17 @@ const signup = async (user, userMetadata, done) => {
 };
 
 const login = async (user, done) => {
+  /* Replay attack protection (https://go.magic.link/replay-attack) */
+  // if (user.claim.iat <= user.lastLoginAt) {
+  //   return done(null, false, {
+  //     message: `Replay attack detected for user ${user.issuer}}.`
+  //   });
+  // }
   let updatedUser = {
-    didToken: user.issuer,
+    issuer: user.issuer,
     lastLoginAt: user.claim.iat
   };
-  await User.updateOne({ didToken: updatedUser.didToken }, { $set: updatedUser });
+  await User.updateOne({ issuer: updatedUser.issuer }, { $set: updatedUser });
   return done(null, user);
 };
 
@@ -51,19 +59,12 @@ passport.serializeUser((user, done) => {
 /* Populates user data in the req.user object */
 passport.deserializeUser(async (id, done) => {
   try {
-    done(null, await User.findOne({ didToken: id }));
+    const user = await User.findOne({ issuer: id });
+    done(null, user);
   } catch (err) {
     done(err, null);
   }
 });
-
-function fetchTodos(id) {
-  let user = User.findOne({ didToken: id })
-    .populate("todos")
-    .exec((err, todos) => todos);
-
-  return user;
-}
 
 router.get("/", async (req, res) => {
   if (!req.isAuthenticated()) {
@@ -80,18 +81,21 @@ router.post("/login", passport.authenticate("magic"), async (req, res) => {
   try {
     await magic.token.validate(didEncoded);
     let claim = magic.token.decode(didEncoded)[1];
-    let todos = await User.findOne({ didToken: claim.iss }).populate("todos");
+    let todos = await User.findOne({ issuer: claim.iss }).populate("todos");
     res.json({
       claim,
       todos
     });
   } catch (err) {
-    console.log(`Error: ${err}`);
+    console.log(`Error logging in: ${err}`);
   }
 });
 
 router.get("/logout", (req, res) => {
   req.logout();
+  console.log(req.isAuthenticated());
+  console.log(req.user);
+  console.log(req.session.passport.user);
   res.json({ loggedOut: true });
 });
 
