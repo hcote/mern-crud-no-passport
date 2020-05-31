@@ -38,11 +38,11 @@ const signup = async (user, userMetadata, done) => {
 
 const login = async (user, done) => {
   /* Replay attack protection (https://go.magic.link/replay-attack) */
-  // if (user.claim.iat <= user.lastLoginAt) {
-  //   return done(null, false, {
-  //     message: `Replay attack detected for user ${user.issuer}}.`
-  //   });
-  // }
+  if (user.claim.iat <= user.lastLoginAt) {
+    return done(null, false, {
+      message: `Replay attack detected for user ${user.issuer}}.`
+    });
+  }
   let updatedUser = {
     issuer: user.issuer,
     lastLoginAt: user.claim.iat
@@ -69,18 +69,19 @@ passport.deserializeUser(async (id, done) => {
 router.get("/", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.sendStatus(401);
+  } else {
+    res
+      .status(200)
+      .json(req.user)
+      .end();
   }
-  res
-    .status(200)
-    .json(req.user)
-    .end();
 });
 
 router.post("/login", passport.authenticate("magic"), async (req, res) => {
-  let didEncoded = req.headers.authorization.split(" ")[1];
+  let didToken = req.headers.authorization.split(" ")[1];
   try {
-    await magic.token.validate(didEncoded);
-    let claim = magic.token.decode(didEncoded)[1];
+    await magic.token.validate(didToken);
+    let claim = magic.token.decode(didToken)[1];
     let todos = await User.findOne({ issuer: claim.iss }).populate("todos");
     res.json({
       claim,
@@ -93,9 +94,6 @@ router.post("/login", passport.authenticate("magic"), async (req, res) => {
 
 router.get("/logout", (req, res) => {
   req.logout();
-  console.log(req.isAuthenticated());
-  console.log(req.user);
-  console.log(req.session.passport.user);
   res.json({ loggedOut: true });
 });
 

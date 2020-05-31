@@ -19,11 +19,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: "enter_your_secret",
+    secret: "your_secret_here",
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000, // 1 hour
+      maxAge: 60 * 60 * 1000, // 1 hour
       secure: false, // set true for HTTPS only.
       sameSite: false
     }
