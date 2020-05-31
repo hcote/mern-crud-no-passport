@@ -6,57 +6,111 @@ body {
 
 /* Logged Out Page */
 
-.signup-form-nav {
-  height: 50px;
-  background-color: #6851ff;
-  margin-bottom: 100px;
-}
-
 .signup-form {
   width: 400px;
+  height: 200px;
   margin: 0 auto;
   text-align: center;
-  border: 1px solid gray;
+  background-color: #ffffff;
   border-radius: 4px;
   padding-bottom: 50px;
+  padding-top: 20px;
+  box-shadow: 0px 0px 8px -2px rgba(163, 163, 163, 1);
+}
+
+.signup-form-header {
+  margin-bottom: 50px;
+  font-weight: 400;
+  font-size: 20px;
 }
 
 .signup-form-input,
 .signup-form-submit-btn {
   box-sizing: border-box;
-  width: 50%;
+  width: 70%;
+  line-height: 40px;
   margin-bottom: 15px;
+  border: 0;
+  background-color: white;
+  border-bottom: 1px solid rgb(196, 196, 196);
+  appearance: none;
+  text-align: center;
+}
+
+.signup-form-input {
+  font-size: 17px;
+}
+
+.signup-form-input:focus {
+  border-bottom: 1px solid #6851ff;
 }
 
 .signup-form-submit-btn {
   cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+  background: rgb(0, 201, 136);
+  background: linear-gradient(355deg, rgba(0, 201, 136, 1) 0%, rgba(104, 81, 255, 1) 68%);
+  color: white;
+  outline-color: none;
+  border-radius: 50px;
+}
+
+.signup-form-input:focus,
+.signup-form-submit-btn:focus {
+  outline: none;
+}
+
+.signup-form-submit-btn:hover {
+  box-shadow: 0px 0px 8px -1px rgba(163, 163, 163, 1);
+}
+
+.signup-form-submit-btn {
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+  background: rgb(0, 201, 136);
+  background: linear-gradient(355deg, rgba(0, 201, 136, 1) 0%, rgba(104, 81, 255, 1) 68%);
+  color: white;
+  outline-color: none;
+  border-radius: 50px;
 }
 
 /* Logged In Nav */
 
-.loggedin-nav {
+.nav {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 50px;
-  background-color: #6851ff;
-  margin-bottom: 50px;
+  height: 60px;
+  background-color: #242a32;
+  margin-bottom: 100px;
 }
 
-.loggedin-nav-user {
+.nav-user {
   margin-left: 35px;
-  margin-top: 15px;
+  margin-top: 20px;
   font-weight: 500;
+  color: rgb(221, 221, 221);
 }
 
 .logout-btn {
   margin-right: 35px;
-  margin-top: 7px;
-  height: 70%;
-  background-color: #6851ff;
-  border: 2px solid #a1a1a1;
-  border-radius: 4px;
+  height: 55%;
+  width: 90px;
+  border: none;
   cursor: pointer;
+  margin-top: 10px;
+  font-size: 15px;
+  background: rgb(0, 201, 136);
+  background: linear-gradient(355deg, rgba(0, 201, 136, 1) 0%, rgba(104, 81, 255, 1) 68%);
+  color: white;
+  outline-color: none;
+  border-radius: 50px;
+}
+
+.logout-btn:hover {
+  box-shadow: 0px 0px 8px -2px rgb(124, 124, 124);
 }
 
 /* Logged In Body */
@@ -73,30 +127,56 @@ body {
   display: flex;
   justify-content: center;
   height: 30px;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .add-todo-input {
-  width: 200px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgb(196, 196, 196);
+}
+
+.add-todo-input:focus {
+  outline: none;
+  border-bottom: 1px solid #6851ff;
 }
 
 .add-todo-error-msg {
   font-size: 10px;
   color: red;
+  height: 15px;
 }
 
 .add-todo-submit-btn {
-  margin-left: 10px;
+  margin-left: 15px;
+  background-color: #242a32;
+  color: white;
+  border: 0;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.add-todo-submit-btn:hover {
+  box-shadow: 0px 0px 8px -2px rgb(124, 124, 124);
 }
 
 /* Todo List */
 
+.todo-list-container {
+  margin-top: 40px;
+}
+
 .todo-item-container {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid gray;
   padding-bottom: 10px;
   margin-top: 20px;
+  border-bottom: 1px solid white;
+}
+
+.todo-item-container:hover {
+  border-bottom: 1px solid rgb(221, 221, 221);
 }
 
 .todo-item-name {
@@ -108,4 +188,12 @@ body {
   color: red;
   height: 30px;
   cursor: pointer;
+  background-color: white;
+  border: 0;
+  border-radius: 4px;
+}
+
+.todo-item-delete-btn:hover {
+  color: white;
+  background-color: red;
 }

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Todo from "./Todo";
 import "../styles/app.css";
 
-function TodoList({ todos, removeDeletedTodoFromView }) {
+function TodoList({ todos, removeDeletedTodoFromView, onLogout }) {
   return (
-    <div>
+    <div className="todo-list-container">
       {todos
         ? todos.map(todo => {
             return (
@@ -12,6 +12,7 @@ function TodoList({ todos, removeDeletedTodoFromView }) {
                 todo={todo}
                 key={todo._id}
                 removeDeletedTodoFromView={removeDeletedTodoFromView}
+                onLogout={onLogout}
               />
             );
           })

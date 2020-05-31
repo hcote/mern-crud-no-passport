@@ -1,22 +1,34 @@
 import React, { useState } from "react";
-import Todo from "./Todo";
+import { serverUrl } from "../config/settings";
 import "../styles/app.css";
 
-function Form({ addNewTodo }) {
+function Form({ m, addNewTodo, onLogout }) {
   let [todo, setTodo] = useState("");
   let [errorMsg, setErrorMsg] = useState("");
+
+  const postTodoToServer = url => {
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({ todo })
+    }).then(res => (res.status === 200 ? res.json() : "Unauthorized"));
+  };
 
   return (
     <div className="add-todo-form-container">
       <form className="add-todo-form">
         <input
           type="text"
-          placeholder="Todo..."
+          placeholder=" Todo..."
           name="todo"
           autoComplete="off"
           className="add-todo-input"
           value={todo}
           onChange={e => {
+            if (todo.length) setErrorMsg("");
             setTodo(e.target.value);
           }}
         />
@@ -28,22 +40,17 @@ function Form({ addNewTodo }) {
           onClick={e => {
             e.preventDefault();
             if (!todo.length) {
-              return setErrorMsg("Field must not be empty.");
-            }
-            setErrorMsg("");
-            fetch("http://localhost:8080/api/todo", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              credentials: "include",
-              body: JSON.stringify({ todo })
-            })
-              .then(res => res.json())
-              .then(data => {
-                addNewTodo(data.todo);
-                setTodo("");
+              setErrorMsg("Field must not be empty.");
+            } else {
+              postTodoToServer(`${serverUrl}/todos/add-todo`).then(data => {
+                if (data === "Unauthorized") {
+                  onLogout(true);
+                } else {
+                  addNewTodo(data.todo);
+                  setTodo("");
+                }
               });
+            }
           }}
         />
       </form>

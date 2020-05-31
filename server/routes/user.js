@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const bodyParser = require("body-parser");
 const passport = require("passport");
 const User = require("../models/User");
-const Todo = require("../models/Todo");
 const { Magic } = require("@magic-sdk/admin");
 const MagicStrategy = require("passport-magic").Strategy;
-const bodyParser = require("body-parser");
 
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
@@ -40,13 +39,7 @@ const login = async (user, done) => {
     didToken: user.issuer,
     lastLoginAt: user.claim.iat
   };
-  await User.updateOne(
-    { didToken: updatedUser.didToken },
-    { $set: updatedUser },
-    (err, updated) => {
-      if (err) console.log(err);
-    }
-  );
+  await User.updateOne({ didToken: updatedUser.didToken }, { $set: updatedUser });
   return done(null, user);
 };
 
@@ -58,8 +51,7 @@ passport.serializeUser((user, done) => {
 /* Populates user data in the req.user object */
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findOne({ didToken: id });
-    done(null, user);
+    done(null, await User.findOne({ didToken: id }));
   } catch (err) {
     done(err, null);
   }
@@ -73,67 +65,34 @@ function fetchTodos(id) {
   return user;
 }
 
+router.get("/", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.sendStatus(401);
+  }
+  res
+    .status(200)
+    .json(req.user)
+    .end();
+});
+
 router.post("/login", passport.authenticate("magic"), async (req, res) => {
   let didEncoded = req.headers.authorization.split(" ")[1];
-  let issuer = await magic.token.getIssuer(didEncoded);
-  let [proof, claim] = magic.token.decode(didEncoded);
-  User.findOne({ didToken: claim.iss })
-    .populate("todos")
-    .exec((err, todos) => {
-      console.log(todos);
-      res.json({
-        claim,
-        todos
-      });
+  try {
+    await magic.token.validate(didEncoded);
+    let claim = magic.token.decode(didEncoded)[1];
+    let todos = await User.findOne({ didToken: claim.iss }).populate("todos");
+    res.json({
+      claim,
+      todos
     });
-});
-
-router.post("/todo", async (req, res) => {
-  if (!req.isAuthenticated()) return;
-  if (!req.body.todo.length) return;
-  let todoObj = new Todo({ todo: req.body.todo });
-  todoObj.save().then(savedTodo => {
-    User.findOne({ didToken: req.session.passport.user }, (err, user) => {
-      console.log(user);
-      user.todos.push(savedTodo);
-      user.save().then(saved => {
-        console.log(savedTodo);
-        res.json({ todo: savedTodo });
-      });
-    });
-  });
-});
-
-router.get("/todos", (req, res) => {
-  if (req.session.passport) {
-    User.findOne({ didToken: req.session.passport.user })
-      .populate("todos")
-      .exec((err, todos) => {
-        res.json(todos);
-      });
+  } catch (err) {
+    console.log(`Error: ${err}`);
   }
-  return;
 });
 
-router.get("/delete-todo/:id", (req, res) => {
-  if (!req.isAuthenticated()) return;
-  Todo.deleteOne({ _id: req.params.id }, (err, deleted) => {
-    if (err) console.log(err);
-    console.log(deleted);
-    res.json({ deleted });
-  });
-});
-
-router.get("/user", async (req, res) => {
-  console.log(req.session);
-  if (req.isAuthenticated()) {
-    return res
-      .status(200)
-      .json(req.user)
-      .end();
-  } else {
-    return res.status(401).end(`User is not logged in.`);
-  }
+router.get("/logout", (req, res) => {
+  req.logout();
+  res.json({ loggedOut: true });
 });
 
 module.exports = router;

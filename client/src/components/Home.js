@@ -1,16 +1,16 @@
 import React from "react";
-import Nav from "./Nav";
-import Body from "./Body";
+import Form from "./Form";
+import TodoList from "./TodoList";
 import "../styles/app.css";
 
-function Home({ issuer, m, onLogout, didEncoded, todos, removeDeletedTodoFromView, addNewTodo }) {
+function Home({ m, todos, removeDeletedTodoFromView, addNewTodo, onLogout }) {
   return (
-    <div>
-      <Nav issuer={issuer} m={m} didEncoded={didEncoded} onLogout={onLogout} />
-      <Body
+    <div className="body-container">
+      <Form m={m} addNewTodo={addNewTodo} onLogout={onLogout} />
+      <TodoList
         todos={todos}
         removeDeletedTodoFromView={removeDeletedTodoFromView}
-        addNewTodo={addNewTodo}
+        onLogout={onLogout}
       />
     </div>
   );

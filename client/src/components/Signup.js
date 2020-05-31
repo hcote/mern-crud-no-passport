@@ -4,29 +4,30 @@ import "../styles/app.css";
 function Signup({ m, onLogin, setTodos }) {
   const [email, setEmail] = useState("huntercote2@gmail.com");
 
+  const loginRequestToServer = (url, did) => {
+    return fetch(url, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + did
+      }),
+      withCredentials: true,
+      credentials: "include"
+    }).then(res => res.json());
+  };
+
   const login = () => {
     m.auth.loginWithMagicLink({ email }).then(did => {
-      fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        headers: new Headers({
-          Authorization: "Bearer " + did
-        }),
-        withCredentials: true,
-        credentials: "include"
-      })
-        .then(res => res.json())
-        .then(data => {
-          onLogin(data.claim);
-          setTodos(data.todos.todos);
-        });
+      loginRequestToServer(`http://localhost:8080/api/user/login`, did).then(data => {
+        onLogin(email);
+        setTodos(data.todos.todos);
+      });
     });
   };
 
   return (
     <div>
-      <nav className="signup-form-nav"></nav>
       <div className="signup-form">
-        <h4 className="signup-form-header">Log in / Sign up</h4>
+        <h4 className="signup-form-header">Magic Todo List</h4>
         <form
           onSubmit={e => {
             e.preventDefault();
@@ -43,7 +44,7 @@ function Signup({ m, onLogin, setTodos }) {
             }}
           />
           <br />
-          <input type="submit" value="Enter" className="signup-form-submit-btn" />
+          <input type="submit" value="Log in | Sign up" className="signup-form-submit-btn" />
         </form>
       </div>
     </div>

@@ -2,93 +2,83 @@ import React, { useState, useEffect } from "react";
 import { Magic } from "magic-sdk";
 import Signup from "./Signup";
 import Home from "./Home";
+import Nav from "./Nav";
+import loading from "../load.gif";
+import { MAGIC_PUBLISHABLE_KEY, serverUrl } from "../config/settings";
 import "../styles/app.css";
 
-let m = new Magic("pk_test_F9BFAF896773C894");
+let m = new Magic(MAGIC_PUBLISHABLE_KEY);
 m.preload();
 
 function App() {
-  const [issuer, setIssuer] = useState("");
-  const [didEncoded, setDidEncoded] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState([]);
-  const [refreshList, setRefreshList] = useState(false);
+
+  const fetchDataFromDb = url => {
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true,
+      credentials: "include"
+    }).then(res => (res.status === 200 ? res.json() : "Unauthorized"));
+  };
+
+  const removeDeletedTodoFromView = id => {
+    let newTodos = todos.filter(todo => id !== todo._id);
+    setTodos(newTodos);
+  };
 
   useEffect(() => {
-    // post to db
-    // if session.passport.user!
-    // render login screen
+    setIsLoading(true);
+    fetchDataFromDb(`${serverUrl}/user`).then(data => {
+      if (data === "Unauthorized") {
+        setEmail("");
+        m.user.logout();
+      } else {
+        setEmail(data.email);
+      }
+    });
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    m.user.getMetadata().then(issuer => {
-      setIssuer(issuer);
+    setIsLoading(true);
+    if (!email) return;
+    fetchDataFromDb(`${serverUrl}/todos/all-todos`).then(data => {
+      if (data === "Unauthorized") {
+        m.user.logout();
+        setEmail("");
+      } else {
+        setTodos(data.todos);
+      }
     });
-  }, [didEncoded]);
-
-  useEffect(() => {
-    if (issuer) {
-      fetch("http://localhost:8080/api/todos", {
-        method: "GET",
-        headers: new Headers({
-          Authorization: "Bearer " + didEncoded,
-          "Content-Type": "application/json"
-        }),
-        withCredentials: true,
-        credentials: "include"
-      })
-        .then(res => res.json())
-        .then(data => setTodos(data.todos));
-    }
-  }, [issuer]);
+    setIsLoading(false);
+  }, [email]);
 
   return (
     <div className="App">
-      {!issuer ? (
-        <Signup m={m} onLogin={did => setDidEncoded(did)} setTodos={todos => setTodos(todos)} />
+      <Nav email={email} onLogout={() => setEmail("")} />
+      {!email ? (
+        <Signup m={m} onLogin={email => setEmail(email)} setTodos={todos => setTodos(todos)} />
       ) : (
         <Home
-          issuer={issuer}
           m={m}
+          email={email}
           todos={todos}
-          removeDeletedTodoFromView={id => {
-            let newTodos = todos.filter(todo => id !== todo._id);
-            setTodos(newTodos);
+          addNewTodo={newTodo => setTodos([...todos, newTodo])}
+          removeDeletedTodoFromView={id => removeDeletedTodoFromView(id)}
+          onLogout={() => {
+            setEmail("");
+            m.user.logout();
           }}
-          addNewTodo={newTodo => {
-            setTodos([...todos, newTodo]);
-          }}
-          didEncoded={didEncoded}
-          onLogout={() => setIssuer("")}
         />
       )}
+      {/* <img src={loading} alt="loading..." height="25px" /> */}
     </div>
   );
 }
 
 export default App;
-
-/**
- * Email is sent
- * User is authenticated with Magic sdk and an encoded did_token is returned as proof
- * fetch POST sent to backend containing encoded did_token
- *    POST contains encoded DID & user object containing issuer, publicAddress, claim;
- *    also included session.Session.cookie._expires & session.Session.passport.user = did:ethr:addr
- * setAuthenticated() is run, which runs useEffect()
- * Issuer is then set via m.user.getMetadata()
- * Home component is rendered, passing issuer props containing: issuer (did), email, publicAddress
- */
-
-/**
- * encoded did contains:
- * [0] proof
- * [1]
- *     iat (issued at)
- *     ext
- *     iss (did:ethr:addr)
- *     sub (subject => user id)
- *     aud
- *     nbf
- *     tid
- *     add
- */

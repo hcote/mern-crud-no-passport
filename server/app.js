@@ -1,12 +1,11 @@
 require("dotenv").config();
 const express = require("express");
-const path = require("path");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const logger = require("morgan");
 const session = require("express-session");
 const passport = require("passport");
 const userRouter = require("./routes/user");
+const todoRouter = require("./routes/todo");
 const cors = require("cors");
 const app = express();
 const db = require("./models/Connection");
@@ -18,17 +17,14 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    secret: "not my cat's name",
+    secret: "enter_your_secret",
     resave: false,
     saveUninitialized: true,
     cookie: {
       maxAge: 60 * 60 * 1000, // 1 hour
-      secure: false, // Uncomment this line to enforce HTTPS protocol.
+      secure: false, // set true for HTTPS only.
       sameSite: false
     }
   })
@@ -36,14 +32,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api", userRouter);
+app.use("/api/user", userRouter);
+app.use("/api/todos", todoRouter);
 
 const listener = app.listen(8080, function() {
   console.log("Listening on port " + listener.address().port);
 });
-
-/**
- * use a strategy when authenticating (i.e. signing up / logging in)
- *    this is the purpose of passport.authenticate("magic") in the /api/post
- * if authentication succeeds, req.user will be set
- */

@@ -1,9 +1,9 @@
 import React from "react";
 import "../styles/app.css";
 
-function Todo({ todo, removeDeletedTodoFromView }) {
+function Todo({ todo, removeDeletedTodoFromView, onLogout }) {
   const deleteFromDatabase = id => {
-    fetch(`http://localhost:8080/api/delete-todo/${id}`, {
+    fetch(`http://localhost:8080/api/todos/delete-todo/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -11,8 +11,10 @@ function Todo({ todo, removeDeletedTodoFromView }) {
       withCredentials: true,
       credentials: "include"
     })
-      .then(res => res.json())
-      .then(data => console.log("Task deleted."));
+      .then(res => (res.status === 200 ? res.json() : "Unauthorized"))
+      .then(data => {
+        if (data === "Unauthorized") onLogout(true);
+      });
   };
 
   return (
