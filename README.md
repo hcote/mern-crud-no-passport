@@ -17,7 +17,7 @@ The <code>master</code> branch uses <code>contextAPI</code> for state management
 
 Anyone can clone this down and have an outofthebox passwordless application ready to go with CRUD capabilities. We leverage Magic's sdk because it provides the highest level of security, and easiest way to add authentication into your app.
 
-- <a href="https://docs.magic.link/security">Magic Security</a>
+More about <a href="https://docs.magic.link/security">Magic Security</a>
 
 #### Flow
 
