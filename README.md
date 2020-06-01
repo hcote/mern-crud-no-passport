@@ -11,7 +11,7 @@ See it live at <a href="#">github.io</a>
 - <a href="https://docs.magic.link" target="_blank">Magic</a> (passwordless authentication SDK)
 - Passportjs
 
-The <code>master</code> branch uses <code>contextAPI</code> for state management. If you want a version that doesn't use that hook, clone down the non-contextAPI branch.
+The <code>master</code> branch uses <code>contextAPI</code> for state management to avoid `prop drilling`. If you want a version that manages state through passing props, clone down the state-props branch.
 
 ## Overview
 
