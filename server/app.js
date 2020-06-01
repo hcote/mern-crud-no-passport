@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); // allow us to access process.env variables
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -23,7 +23,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 0.5 * 60 * 1000, // 1 hour
       secure: false, // set true for HTTPS only.
       sameSite: false
     }

@@ -2,6 +2,11 @@ import React from "react";
 import "../styles/app.css";
 
 function Todo({ todo, removeDeletedTodoFromView, onLogout }) {
+  /**
+   * Send request to delete `todo` from database
+   * If current session is expired, trigger the logout()
+   * Otherwise, the `todo` was successfully deleted
+   */
   const deleteFromDatabase = id => {
     fetch(`http://localhost:8080/api/todos/delete-todo/${id}`, {
       method: "GET",

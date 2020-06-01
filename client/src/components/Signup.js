@@ -1,9 +1,27 @@
 import React, { useState } from "react";
+import { serverUrl } from "../config/settings";
 import "../styles/app.css";
 
 function Signup({ m, onLogin, setTodos }) {
-  const [email, setEmail] = useState("huntercote2@gmail.com");
+  const [email, setEmail] = useState("");
 
+  /**
+   * Login with Magic, which sends an email to the user
+   * Unique Decentralized ID token is returned when the user clicks the email link
+   * Then send the DID in the header as Authorization: Bearer <did>
+   * Trigger the onLogin prop which sets the user email to isLoggedIn, triggering <Home /> to render
+   * Set Todos with response from server containing that user's Todos
+   */
+  const login = async () => {
+    let did = await m.auth.loginWithMagicLink({ email });
+    let data = await loginRequestToServer(`${serverUrl}/user/login`, did);
+    onLogin(email);
+    setTodos(data.todos.todos);
+  };
+
+  /**
+   * POST request to server with our DID token
+   */
   const loginRequestToServer = (url, did) => {
     return fetch(url, {
       method: "POST",
@@ -13,13 +31,6 @@ function Signup({ m, onLogin, setTodos }) {
       withCredentials: true,
       credentials: "include"
     }).then(res => res.json());
-  };
-
-  const login = async () => {
-    let did = await m.auth.loginWithMagicLink({ email });
-    let data = await loginRequestToServer(`http://localhost:8080/api/user/login`, did);
-    onLogin(email);
-    setTodos(data.todos.todos);
   };
 
   return (
@@ -37,9 +48,7 @@ function Signup({ m, onLogin, setTodos }) {
             type="email"
             placeholder="Email..."
             className="signup-form-input"
-            onChange={e => {
-              setEmail(e.target.value);
-            }}
+            onChange={e => setEmail(e.target.value)}
           />
           <br />
           <input type="submit" value="Log in | Sign up" className="signup-form-submit-btn" />

@@ -20,8 +20,6 @@ const strategy = new MagicStrategy(async function(user, done) {
   }
 });
 
-passport.use(strategy);
-
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 passport.use(strategy);
@@ -78,10 +76,10 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/login", passport.authenticate("magic"), async (req, res) => {
-  let didToken = req.headers.authorization.split(" ")[1];
   try {
-    await magic.token.validate(didToken);
-    let claim = magic.token.decode(didToken)[1];
+    let didToken = req.headers.authorization.split(" ")[1]; // strip token from Authorization header
+    await magic.token.validate(didToken); // validate token to ensure request came from the issuer
+    let claim = magic.token.decode(didToken)[1]; // decode token to get claim obj with data, see https://docs.magic.link/admin-sdk/node-js/sdk/token-module/decode#returns
     let todos = await User.findOne({ issuer: claim.iss }).populate("todos");
     res.json({
       claim,

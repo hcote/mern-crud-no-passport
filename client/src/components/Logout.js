@@ -2,23 +2,15 @@ import React from "react";
 import "../styles/app.css";
 
 function Logout({ onLogout }) {
-  const requestLogout = url => {
-    return fetch(url, {
-      method: "GET",
-      withCredentials: true,
-      credentials: "include"
-    }).then(() => onLogout());
-  };
-
   return (
     <div>
       <input
         type="submit"
         value="Logout"
         className="logout-btn"
-        onClick={async e => {
+        onClick={e => {
           e.preventDefault();
-          requestLogout(`http://localhost:8080/api/user/logout`);
+          onLogout();
         }}
       />
     </div>

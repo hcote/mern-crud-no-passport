@@ -21,13 +21,12 @@ router.post("/add-todo", async (req, res) => {
     res.sendStatus(401);
   } else {
     if (!req.body.todo.length) return;
-    let todoObj = new Todo({ todo: req.body.todo });
-    let savedTodo = await todoObj.save();
-    console.log(req.session);
+    let todoObj = new Todo({ todo: req.body.todo }); // create new Todo
+    let savedTodo = await todoObj.save(); // save new Todo
     try {
       let user = await User.findOne({ issuer: req.session.passport.user });
-      user.todos.push(savedTodo);
-      await user.save();
+      user.todos.push(savedTodo); // add Todo to user
+      await user.save(); // save user
       res.json({ todo: savedTodo });
     } catch (err) {
       console.log(`Error adding todo: ${err}`);
@@ -45,7 +44,7 @@ router.get("/delete-todo/:id", async (req, res) => {
     user.todos = user.todos.filter(t => t._id !== todoId);
     await Todo.deleteOne({ _id: todoId });
     await user.save();
-    res.json({ user });
+    res.json(user);
   }
 });
 
