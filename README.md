@@ -82,7 +82,7 @@ When testing on localhost, the connection is over http so we keep secure: false.
 
 #### Mongo Database
 
-This is set up using Mongo DB Atlas, which is a free cloud-based Mongo database. I will not go into setting this up but you can follow one of the many tutorials on YouTube.
+This is set up using Mongo DB Atlas, which is a free cloud-based mongo database. I will not go into setting this up but you can follow one of the many tutorials on YouTube.
 
 ## Environment Variables
 
