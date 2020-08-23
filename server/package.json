@@ -18,7 +18,6 @@
     "express-session": "1.17.0",
     "mongodb": "^3.5.7",
     "mongoose": "^5.9.13",
-    "morgan": "~1.9.1",
     "nedb-promise": "2.0.1",
     "passport": "0.4.1",
     "passport-magic": "^1.0.0"

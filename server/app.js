@@ -1,7 +1,6 @@
 require("dotenv").config(); // allow us to access process.env variables
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const logger = require("morgan");
 const session = require("express-session");
 const passport = require("passport");
 const userRouter = require("./routes/user");
@@ -13,17 +12,16 @@ const db = require("./models/Connection");
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.set("trust proxy", 1);
 
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: "your_secret_here",
-    resave: false,
-    saveUninitialized: true,
+    secret: process.env.ENCRYPTION_SECRET,
+    resave: false, // don't resave session variables if nothing has changed
+    saveUninitialized: true, // save empty value in session if there is no value
     cookie: {
-      maxAge: 0.5 * 60 * 1000, // 1 hour
+      maxAge: 60 * 60 * 1000, // 1 hour
       secure: false, // set true for HTTPS only.
       sameSite: false
     }
@@ -35,6 +33,6 @@ app.use(passport.session());
 app.use("/api/user", userRouter);
 app.use("/api/todos", todoRouter);
 
-const listener = app.listen(8080, function() {
+const listener = app.listen(process.env.PORT || 8080, function() {
   console.log("Listening on port " + listener.address().port);
 });
