@@ -1,118 +1,279 @@
-## Magic Todo List
+### Demo
 
-See it live at <a href="#">github.io</a>
+Live at https://react-magic-todo.herokuapp.com/
 
-## Technologies
+## Quick Start
 
-- Mongo
-- Express
-- Node
-- React (hooks)
-- <a href="https://docs.magic.link" target="_blank">Magic</a> (passwordless authentication SDK)
-- Passportjs
+```
+$ git clone <repo>
 
-The <code>master</code> branch uses <code>contextAPI</code> for state management to avoid "prop drilling". If you want a version that manages state through passing props, clone down the state-props branch.
+$ cd <repo_folder_name>
 
-## Overview
+$ npm i
 
-Anyone can clone this down and have an outofthebox passwordless application ready to go with CRUD capabilities. We leverage Magic's sdk because it provides the highest level of security, and easiest way to add authentication into your app.
+.....
+```
 
-More about <a href="https://docs.magic.link/security">Magic Security</a>
+#### Environment Variables
 
-#### Flow
+- Get your Magic API keys from the <a href="https://dashboard.magic.link">Dashboard</a>
 
-1. User submits the login form
-2. Magic sends an email to the user
-3. When the email link is clicked, <code>m.auth.loginWithMagicLink({ email })</code> resolves to a unique Decentralized ID token, which is sent in a POST request to the server (read more about <a href="https://docs.magic.link/tutorials/decentralized-id">DID tokens</a>)
-4. We validate the authenticity of the did token (sent in the <code>Authorization: Bearer < token ></code>) Magic's server-side SDK
-5. If valid, we create a new user in Mongo if it's the first time authenticating, or logs a user in if they already have an account
-6. Passport issues a cookie that lives in <code>request.session</code> to authorize all additional requests to the server
+- This example uses MongoDB Atlas, which provides a free cloud instance of Mongo that is very easy to connect to. Visit their <a href="https://account.mongodb.com/account/register">website</a> to create an account. Once you go through the setup steps, click "Connect your Application" to grab the URI.
 
-#### Managing Sessions
+`/client/.env` for your client-side environment variables.
+```
 
-Magic's SDK is used for authentication, then passportjs handles the authorization and session management. When setting the cookie:
+```
 
-<pre>
-<code>
-app.use(
-  session({
-    secret: "your_secret_here",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
-      secure: false, // set true for HTTPS only.
-      sameSite: false
+`/.env` for your server-side environment variables.
+```
+
+```
+
+# Tutorial
+
+### Introduction
+
+This tutorial will give a brief overview of how to integrate Magic into a full stack application (React, Node, MongoDB).
+
+### Building the Application
+
+```
+$ npx create-react-app react-magic-todo
+```
+
+### Login
+
+The `Login` component will allow the user to authenticate with Magic. The sequence of events is:
+
+- User enters their email and clicks "Log in"
+- An email containing a magic link is sent to the user, triggered by `magic.auth.loginWithMagicLink({ email });`
+- User clicks the email link
+- `loginWithMagicLink()` resolves to a unique `DID token`
+- A `POST` request is sent to the database with the `DID` inside the `Authorization Header`
+- Server validates the `DID`, creates a user based on `getMetadata()`, and responds back to the client `{ authorized: true, user: user }`
+- `setLoggedIn` is set to the user object returned by the server
+- Redirect to home page
+
+```javascript
+// components/Login.js
+import React, { useContext, useState } from "react";
+import { MagicContext, LoggedInContext, LoadingContext } from "./Store";
+import { Link } from "react-router-dom";
+import loadingGif from "../images/loading.gif";
+import "../styles/login.css";
+
+const Login = props => {
+  const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
+  const [isLoading] = useContext(LoadingContext);
+  const [email, setEmail] = useState("");
+  const [magic] = useContext(MagicContext);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [disableLogin, setDisableLogin] = useState(false);
+
+  const authenticateWithDb = async (DIDT) => {
+
+    /* Pass the Decentralized ID token in the Authorization header to the database */
+    let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/user/login`, {
+      method: "POST",
+      headers: new Headers({
+        Authorization: "Bearer " + DIDT,
+      }),
+      credentials: "include"
+    });
+
+    let data = await res.json();
+
+    /* If the user is authorized, return an object containing the user properties (issuer, publicAddress, email) */
+    /* Else, the login was not successful and return false */
+    return data.authorized ? data.user : false;
+  };
+
+  const handleLogin = async () => {
+    try {
+      /* disable the login button to prevent users from clicking it multiple times, triggering mutliple emails */
+      setDisableLogin(true);
+
+      /* Get DID Token returned from when the email link is clicked */
+      const DIDT = await magic.auth.loginWithMagicLink({ email });
+
+      /* `user` will be the user object returned from the db, or `false` if the login failed */
+      let user = await authenticateWithDb(DIDT);
+
+      if (user) {
+        setLoggedIn(user.email);
+        return props.history.push("/");
+      }
+    } catch (err) {
+      /* If the user clicked "cancel", allow them to click the login again */
+      setDisableLogin(false);
+
+      /* Handle error (which can occur if the user clicks `Cancel` on the modal after submitting their email) */
+      console.log(`Error logging in with Magic, ${err}`);
     }
-  })
-);
-</code>
-</pre>
+  };
 
-Change the <code>maxAge</code> to how long you want the user session to last. Each time they make an authorized request to the server, the cookie age will reset and
-
-When testing on localhost, the connection is over http so we keep secure: false. Read more about session management with Express Session <a href="https://github.com/expressjs/session">here</a>.
-
-## Getting Project Started Locally
-
-<code>\$ git clone < repo_name > </code>
-
-###### Terminal Tab 1 (set up client)
-
-<code>$ cd client</code><br />
-<code>$ npm i</code><br />
-<code>$ cd src</code><br />
-<code>$ mkdir settings</code><br />
-<code>$ cd settings && touch config</code><br />
-<span>See Environment Variables > <b>Client</b> section below</span><br />
-<code>$ cd ../../</code><br />
-<code>\$ npm run start</code><br />
-
-<p>The client will start on port 3000</p>
-
-###### Terminal Tab 2 (set up server)
-
-<code>$ cd server</code><br />
-<code>$ npm i</code><br />
-<code>$ touch .env</code><br />
-<span>See Environment Variables > <b>Server</b> section below</span><br />
-<code>$ nodemon</code>
-
-<p>The server will start on port 8080</p>
-
-#### Mongo Database
-
-This is set up using Mongo DB Atlas, which is a free cloud-based mongo database. I will not go into setting this up but you can follow one of the many tutorials on YouTube.
-
-## Environment Variables
-
-#### Client
-
-<p>Enter this in client/src/settings/config.js</p>
-<pre>
-<code>
-const settings = {
-  MAGIC_PUBLISHABLE_KEY: "your_publishable_key",
-  serverUrl: "your_server_url_here" // http://localhost:8080
+  return (
+    <>
+      {isLoading ? ( // if fetching data, show a loading symbol
+        <img
+          className="loading-gif"
+          src={loadingGif}
+          alt="loading..."
+          height="35px"
+          alt="Loading..."
+        />
+      ) : loggedIn ? ( // If the user is logged in, show a link to the home page
+        <>
+          You're already logged in! Click <Link to="/">here</Link> to view your Todos.
+        </>
+      ) : (
+        <div className="login-form">
+          <h4 className="login-form-header">Enter Your Email</h4>
+          <form>{/* form for login here */}</form>
+        </div>
+      )}
+    </>
+  );
 };
 
-module.exports = settings;
-</code></pre>
+export default Login;
+```
 
-#### Server
+### Customizing the UI
 
-<p>Enter this in your server/.env file</p>
-<pre>
-<code>
-MAGIC_PUBLISHABLE_KEY=your_publishable_key
-MAGIC_SECRET_KEY=your_secret_key
-mongoURI=your_mongo_URL
-CLIENT_URL=your_client_url_here (i.e. http://localhost:3000)</code></pre>
+Magic allows you to own your UI. You can hide the modal after a user clicks Log In with `await loginWithMagicLink({ email, showUI: false })`. If you are on the <a href="https://magic.link/pricing">Starter Plan</a>, you can also customize the modal and email by adding your logo and choosing the style colors. Navigate to the <a href="https://dashboard.magic.link">Magic Dashboard</a> --> "Custom Branding".
 
-## Errors
+### Handling Login Server-side
 
-If you experience errors installing dependencies, change your Node and Npm versions to the ones below:
+In `/pages/api/user/login.js` we handle POST requests to authenticate the user with our database. Once we validate the `DID token` and create a new user in the database, we have to issue a cookie to track our user sessions.
 
-Node: 10.15.10
+```javascript
+// routes/user.js
+const express = require("express");
+const router = express.Router();
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const User = require("../models/User");
+const { Magic } = require("@magic-sdk/admin");
+const MagicStrategy = require("passport-magic").Strategy;
 
-Npm: 6.4.1
+const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+
+const strategy = new MagicStrategy(async function (user, done) {
+  const userMetadata = await magic.users.getMetadataByIssuer(user.issuer);
+  const existingUser = await User.findOne({ issuer: user.issuer });
+  if (!existingUser) {
+    /* Create new user if doesn't exist */
+    return signup(user, userMetadata, done);
+  } else {
+    /* Login user if otherwise */
+    return login(user, done);
+  }
+});
+
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
+
+/* calls our MagicStrategy when a user logs in */
+passport.use(strategy);
+
+const signup = async (user, userMetadata, done) => {
+  let newUser = {
+    email: userMetadata.email,
+    issuer: user.issuer,
+    lastLoginAt: user.claim.iat,
+  };
+  await new User(newUser).save();
+  return done(null, newUser);
+};
+
+const login = async (user, done) => {
+  /* Replay attack protection (https://go.magic.link/replay-attack) */
+  if (user.claim.iat <= user.lastLoginAt) {
+    return done(null, false, {
+      message: `Replay attack detected for user ${user.issuer}}.`,
+    });
+  }
+  let updatedUser = {
+    issuer: user.issuer,
+    lastLoginAt: user.claim.iat,
+  };
+  await User.updateOne({ issuer: updatedUser.issuer }, { $set: updatedUser });
+  return done(null, user);
+};
+
+/* Defines what data/cookies are stored in the user session */
+passport.serializeUser((user, done) => {
+  done(null, user.issuer);
+});
+
+/* Populates user data in the req.user object */
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findOne({ issuer: id });
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
+
+router.get("/", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ authorized: false });
+  } else {
+    return res.json({ authorized: true, user: req.user });
+  }
+});
+
+router.post("/login", passport.authenticate("magic"), async (req, res) => {
+  /* strip token from Authorization header */
+  let DIDT = req.headers.authorization.split(" ")[1];
+
+  /* validate token to ensure request came from the issuer */
+  await magic.token.validate(DIDT);
+
+  /**
+   * decode token to get claim obj with data, see https://docs.magic.link/admin-sdk/node-js/sdk/token-module/decode#returns
+   *
+   * `claim` will be in the form of
+   * {
+   * iat: 1595635806,
+   * ext: 1595636706,
+   * iss: 'did:ethr:0x84Ebf8BD2b35dA715A5351948f52ebcB57B7916A',
+   * sub: 'LSZlrB5urQNFIXEXpTdVnI6BzwdJNJMlfqsEJvrCvRI=',
+   * aud: 'did:magic:026e022c-9b57-42bf-95d4-997543be1c21',
+   * nbf: 1595635806,
+   * tid: 'aea69063-0665-41ca-a2e2-4ff36c734703',
+   * add: '0xf6ee75197340d270156c25054a99edda0edfc0b491fe1b433c9360481c043992428c82ca8b341272ba81d8004ddfbf739dda2368743349db0b9f97f3293707aa1c'
+   * }
+   */
+  let claim = magic.token.decode(DIDT)[1];
+
+  /**
+   * get user data from Magic
+   *
+   * `userMetadata` will be on the form of:
+   * {
+   * issuer: 'did:ethr:0x84Ebf7BD2b35aD715A5351948f52ebcB57B7916A',
+   * publicAddress: '0x84Ebf7BD2b35aD715A5351948f52ebcB57B7916A',
+   * email: 'example@gmail.com'
+   * }
+   */
+  const userMetadata = await magic.users.getMetadataByIssuer(claim.iss);
+
+  /* send back response with user obj */
+  return res.json({ authorized: true, user: userMetadata });
+});
+
+router.get("/logout", (req, res) => {
+  req.logout();
+  return res.json({ authorized: false });
+});
+
+module.exports = router;
+```
+
+### Deploying the app with Heroku
+
+
