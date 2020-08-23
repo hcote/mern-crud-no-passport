@@ -34,7 +34,7 @@ app.use(passport.session());
 app.use("/api/user", userRouter);
 app.use("/api/todos", todoRouter);
 
-// Serve static assets if in prod
+// Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'))
   
