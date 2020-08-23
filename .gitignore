@@ -2,7 +2,7 @@
 
 # dependencies
 client/node_modules
-server/node_modules
+node_modules
 client/.pnp
 client/.pnp.js
 
@@ -14,7 +14,7 @@ client/build
 
 # misc
 client/.DS_Store
-server/.DS_Store
+.DS_Store
 .DS_Store
 client/.env.local
 client/.env.development.local
@@ -26,6 +26,6 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 client/src/config
-server/users.db
-server/.env
+users.db
+.env
 notes.txt

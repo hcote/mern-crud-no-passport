@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js localhost 8080"
+    "start": "node app.js"
   },
   "dependencies": {
     "@magic-sdk/admin": "^1.0.0",

@@ -5,6 +5,7 @@ const session = require("express-session");
 const passport = require("passport");
 const userRouter = require("./routes/user");
 const todoRouter = require("./routes/todo");
+const path = require("path");
 const cors = require("cors");
 const app = express();
 const db = require("./models/Connection");
@@ -32,6 +33,8 @@ app.use(passport.session());
 
 app.use("/api/user", userRouter);
 app.use("/api/todos", todoRouter);
+
+app.use(express.static(path.resolve(__dirname, 'build')))
 
 const listener = app.listen(process.env.PORT || 8080, function() {
   console.log("Listening on port " + listener.address().port);
