@@ -8,7 +8,7 @@ const todoRouter = require("./routes/todo");
 const path = require("path");
 const cors = require("cors");
 const app = express();
-const db = require("./models/Connection");
+const db = require("./models/connection");
 
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.set("trust proxy", 1);
