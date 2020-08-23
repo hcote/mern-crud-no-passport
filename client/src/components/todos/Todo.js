@@ -60,6 +60,7 @@ const Todo = ({ todo, allTodos, setAllTodos }) => {
             /* Change the img source depending on if the Todo is completed or not */
             src={todo.completed ? unstyledCheck : styledCheck}
             className="toggle-complete-btn"
+            alt="check-mark"
             onClick={async e => {
               /* Update the `completed` attribute in our database */
               let todoDiv = e.target.parentElement.parentElement;

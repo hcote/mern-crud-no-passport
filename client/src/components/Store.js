@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Magic } from "magic-sdk";
 import Layout from "./Layout";
 
@@ -6,10 +6,6 @@ import Layout from "./Layout";
 export const MagicContext = React.createContext();
 export const LoggedInContext = React.createContext();
 export const LoadingContext = React.createContext();
-
-/* preload iframe */
-let m = new Magic(process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY);
-m.preload();
 
 /* this function wraps our entire app within our context APIs so all components have access to their values */
 const Store = ({ children }) => {
@@ -21,6 +17,9 @@ const Store = ({ children }) => {
     (async () => {
       setIsLoading(true);
 
+      /* preload iframe */
+      let m = new Magic(process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY);
+      m.preload();
       await setMagic(m);
 
       /* On page refresh, send a request to /api/user to see if there's a valid user session */

@@ -2,12 +2,11 @@ import React, { useContext, useState } from "react";
 import { MagicContext, LoggedInContext, LoadingContext } from "./Store";
 import { Link } from "react-router-dom";
 import loadingGif from "../images/loading.gif";
-import { Redirect } from "react-router-dom";
 import "../styles/login.css";
 
 const Login = props => {
   const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
-  const [isLoading, setIsLoading] = useContext(LoadingContext);
+  const [isLoading] = useContext(LoadingContext);
   const [email, setEmail] = useState("");
   const [magic] = useContext(MagicContext);
   const [errorMsg, setErrorMsg] = useState("");

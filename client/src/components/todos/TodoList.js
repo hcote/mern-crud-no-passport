@@ -121,7 +121,7 @@ const TodoList = () => {
             <li className="instructions-item">Then you can add todos to your list</li>
             <li className="instructions-item">
               To mark an item completed, click the{" "}
-              <img src={styledCheck} className="toggle-complete-btn" />{" "}
+              <img src={styledCheck} className="toggle-complete-btn" alt="check-mark" />{" "}
             </li>
             <li className="instructions-item">
               To delete an item, click the <span className="delete-todo-btn-example">&#10005;</span>
