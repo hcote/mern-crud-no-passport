@@ -27,5 +27,5 @@ client/yarn-error.log*
 
 client/src/config
 users.db
-.env
+# .env
 notes.txt
