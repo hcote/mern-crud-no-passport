@@ -4,23 +4,22 @@ import { Link } from "react-router-dom";
 import loadingGif from "../images/loading.gif";
 import "../styles/login.css";
 
-const Login = props => {
+const Login = (props) => {
   const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
   const [isLoading] = useContext(LoadingContext);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("huntercote2@gmail.com");
   const [magic] = useContext(MagicContext);
   const [errorMsg, setErrorMsg] = useState("");
   const [disableLogin, setDisableLogin] = useState(false);
 
   const authenticateWithDb = async (DIDT) => {
-
     /* Pass the Decentralized ID token in the Authorization header to the database */
     let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/user/login`, {
       method: "POST",
       headers: new Headers({
         Authorization: "Bearer " + DIDT,
       }),
-      credentials: "include"
+      credentials: "include",
     });
 
     let data = await res.json();

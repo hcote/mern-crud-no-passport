@@ -20,10 +20,10 @@ const TodoList = () => {
     let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/todos`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ formTodo })
+      body: JSON.stringify({ formTodo }),
     });
 
     let data = await res.json();
@@ -49,12 +49,14 @@ const TodoList = () => {
 
         let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/todos`, {
           method: "GET",
-          credentials: "include"
-        })
+          credentials: "include",
+        });
         let data = await res.json();
 
-        /* set Todos with the db response */
-        await setAllTodos(data.user.todos);
+        if (data.authorized) {
+          /* set Todos with the db response */
+          await setAllTodos(data.user.todos);
+        }
 
         setIsLoading(false);
       })();
@@ -80,7 +82,7 @@ const TodoList = () => {
                 className="add-todo-input"
                 type="text"
                 value={formTodo}
-                onChange={e => {
+                onChange={(e) => {
                   setErrorMsg(""); // clear error msg
                   setFormTodo(e.target.value);
                 }}
@@ -90,7 +92,7 @@ const TodoList = () => {
                 className="add-todo-submit-btn"
                 type="submit"
                 value="Add"
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   if (!formTodo) return setErrorMsg("Field must not be empty."); // if form is empty, show the error msg
                   setFormTodo(""); // clear form input
@@ -103,11 +105,11 @@ const TodoList = () => {
           </div>
           <div className="todo-list-container">
             <div className="items-left-display">
-              {allTodos && allTodos.filter(todo => todo.completed === false).length} item(s) left
+              {allTodos && allTodos.filter((todo) => todo.completed === false).length} item(s) left
             </div>
             {/* Display all of our Todos by looping through the `allTodos` array */}
             {allTodos &&
-              allTodos.map(todo => {
+              allTodos.map((todo) => {
                 return (
                   <Todo todo={todo} key={todo._id} allTodos={allTodos} setAllTodos={setAllTodos} />
                 );

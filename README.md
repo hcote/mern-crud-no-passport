@@ -1,6 +1,21 @@
+### Heroku Instructions
+
+`client/.env`
+
+`.env`
+
+Magic Live API keys
+
+```
+$ heroku create
+$ git add .
+$ git commit -m 'heroku commit'
+$ git push heroku master
+```
+
 ### Demo
 
-Live at https://react-magic-todo.herokuapp.com/
+Live at https://react-magic-todo-cookies.herokuapp.com/
 
 ## Quick Start
 
@@ -21,11 +36,13 @@ $ npm i
 - This example uses MongoDB Atlas, which provides a free cloud instance of Mongo that is very easy to connect to. Visit their <a href="https://account.mongodb.com/account/register">website</a> to create an account. Once you go through the setup steps, click "Connect your Application" to grab the URI.
 
 `/client/.env` for your client-side environment variables.
+
 ```
 
 ```
 
 `/.env` for your server-side environment variables.
+
 ```
 
 ```
@@ -63,7 +80,7 @@ import { Link } from "react-router-dom";
 import loadingGif from "../images/loading.gif";
 import "../styles/login.css";
 
-const Login = props => {
+const Login = (props) => {
   const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
   const [isLoading] = useContext(LoadingContext);
   const [email, setEmail] = useState("");
@@ -72,14 +89,13 @@ const Login = props => {
   const [disableLogin, setDisableLogin] = useState(false);
 
   const authenticateWithDb = async (DIDT) => {
-
     /* Pass the Decentralized ID token in the Authorization header to the database */
     let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/user/login`, {
       method: "POST",
       headers: new Headers({
         Authorization: "Bearer " + DIDT,
       }),
-      credentials: "include"
+      credentials: "include",
     });
 
     let data = await res.json();
@@ -275,5 +291,3 @@ module.exports = router;
 ```
 
 ### Deploying the app with Heroku
-
-

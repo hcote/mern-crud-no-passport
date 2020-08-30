@@ -1,80 +1,55 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
-const passport = require("passport");
 const User = require("../models/User");
 const { Magic } = require("@magic-sdk/admin");
-const MagicStrategy = require("passport-magic").Strategy;
+const { cookie, decryptCookie, encryptCookie } = require("../cookie");
+const { serialize } = require("cookie");
 
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
-
-const strategy = new MagicStrategy(async function (user, done) {
-  const userMetadata = await magic.users.getMetadataByIssuer(user.issuer);
-  const existingUser = await User.findOne({ issuer: user.issuer });
-  if (!existingUser) {
-    /* Create new user if doesn't exist */
-    return signup(user, userMetadata, done);
-  } else {
-    /* Login user if otherwise */
-    return login(user, done);
-  }
-});
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
-/* calls our MagicStrategy when a user logs in */
-passport.use(strategy);
-
-const signup = async (user, userMetadata, done) => {
+const signup = async (userMetadata, iat) => {
   let newUser = {
     email: userMetadata.email,
-    issuer: user.issuer,
-    lastLoginAt: user.claim.iat,
+    issuer: userMetadata.issuer,
+    firstLoggedIn: iat,
   };
-  await new User(newUser).save();
-  return done(null, newUser);
+
+  return await new User(newUser).save();
 };
 
-const login = async (user, done) => {
-  /* Replay attack protection (https://go.magic.link/replay-attack) */
-  if (user.claim.iat <= user.lastLoginAt) {
-    return done(null, false, {
-      message: `Replay attack detected for user ${user.issuer}}.`,
-    });
-  }
-  let updatedUser = {
-    issuer: user.issuer,
-    lastLoginAt: user.claim.iat,
-  };
-  await User.updateOne({ issuer: updatedUser.issuer }, { $set: updatedUser });
-  return done(null, user);
-};
-
-/* Defines what data/cookies are stored in the user session */
-passport.serializeUser((user, done) => {
-  done(null, user.issuer);
-});
-
-/* Populates user data in the req.user object */
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findOne({ issuer: id });
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
-});
-
+/**
+ * Check if a user is authenticated
+ */
 router.get("/", async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ authorized: false });
-  } else {
-    return res.json({ authorized: true, user: req.user });
+  let userFromCookie;
+
+  try {
+    /**
+     * `userFromCookie` will be on the form of:
+     * {
+     * issuer: 'did:ethr:0x84Ebf7BD2b35aD715A5351948f52ebcB57B7916A',
+     * publicAddress: '0x84Ebf7BD2b35aD715A5351948f52ebcB57B7916A',
+     * email: 'example@gmail.com'
+     * }
+     */
+    userFromCookie = await decryptCookie(req.cookies.auth);
+  } catch (error) {
+    /* if there's no valid auth cookie, user is not logged in */
+    return res.json({ authorized: false, error });
   }
+
+  /* send back response with user obj */
+  return res.json({ authorized: true, user: userFromCookie });
 });
 
-router.post("/login", passport.authenticate("magic"), async (req, res) => {
+/**
+ * LOGIN
+ */
+router.post("/login", async (req, res) => {
   /* strip token from Authorization header */
   let DIDT = req.headers.authorization.split(" ")[1];
 
@@ -110,12 +85,35 @@ router.post("/login", passport.authenticate("magic"), async (req, res) => {
    */
   const userMetadata = await magic.users.getMetadataByIssuer(claim.iss);
 
+  /* check if user is already in */
+  const existingUser = await User.findOne({ issuer: claim.iss });
+
+  /* Create new user if doesn't exist */
+  !existingUser && signup(userMetadata, claim.iat);
+
+  /* encrypted cookie details */
+  const token = await encryptCookie(userMetadata);
+
+  /* set cookie */
+  await res.setHeader("Set-Cookie", serialize("auth", token, cookie));
+
   /* send back response with user obj */
   return res.json({ authorized: true, user: userMetadata });
 });
 
+/**
+ * LOGOUT
+ */
 router.get("/logout", (req, res) => {
-  req.logout();
+  /* replace current auth cookie with an expired one */
+  res.setHeader(
+    "Set-Cookie",
+    serialize("auth", "", {
+      ...cookie,
+      expires: new Date(Date.now() - 1),
+    })
+  );
+
   return res.json({ authorized: false });
 });
 

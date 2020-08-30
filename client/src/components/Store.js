@@ -25,9 +25,11 @@ const Store = ({ children }) => {
       /* On page refresh, send a request to /api/user to see if there's a valid user session */
       let res = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/user`, {
         method: "GET",
-      credentials: "include"
+        credentials: "include",
       });
       let data = await res.json();
+
+      console.log(data);
 
       /* If the user has a valid session with our server, it will return {authorized: true, user: user} */
       let loggedIn = data.authorized ? data.user : false;
