@@ -7,7 +7,7 @@ import "../styles/login.css";
 const Login = (props) => {
   const [loggedIn, setLoggedIn] = useContext(LoggedInContext);
   const [isLoading] = useContext(LoadingContext);
-  const [email, setEmail] = useState("huntercote2@gmail.com");
+  const [email, setEmail] = useState("");
   const [magic] = useContext(MagicContext);
   const [errorMsg, setErrorMsg] = useState("");
   const [disableLogin, setDisableLogin] = useState(false);
