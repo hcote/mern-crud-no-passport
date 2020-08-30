@@ -6,6 +6,14 @@
 
 Magic Live API keys
 
+Ensure .env files are not being ignored by .gitignore
+
+Procfile
+
+app.js function (// Serve static assets if in production)
+
+package.json
+
 ```
 $ heroku create
 $ git add .
