@@ -20,11 +20,6 @@ app.use(
     secret: process.env.ENCRYPTION_SECRET,
     resave: false, // don't resave session variables if nothing has changed
     saveUninitialized: true, // save empty value in session if there is no value
-    // cookie: {
-    //   maxAge: 60 * 60 * 1000, // 1 hour
-    //   secure: process.env.NODE_ENV === "production", // true if we're in a production environment
-    //   sameSite: false,
-    // },
   })
 );
 

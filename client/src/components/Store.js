@@ -29,8 +29,6 @@ const Store = ({ children }) => {
       });
       let data = await res.json();
 
-      console.log(data);
-
       /* If the user has a valid session with our server, it will return {authorized: true, user: user} */
       let loggedIn = data.authorized ? data.user : false;
 
